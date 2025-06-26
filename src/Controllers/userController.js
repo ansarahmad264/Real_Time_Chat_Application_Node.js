@@ -166,9 +166,37 @@ const updateUserProfilePicture = asyncHandler(async(req,res) => {
     .status(200)
     .json(new ApiResponse(200,user,"User Profile Picture Updated Successfully"))
 })
+
+const changeCurrentPassword = asyncHandler(async(req,res) => {
+    const {newPassword, oldPassword} = req.body
+    if(!newPassword || !oldPassword){
+        throw new ApiError(400, "All Fields are Required")
+    }
+
+    const user = await User.findById(req.user._id)
+    
+    const isOldPasswordValid = await user.isPasswordCorrect(oldPassword)
+    if(!isOldPasswordValid){
+        throw new ApiError(400, "Invalid old Password")
+    }
+
+    if(oldPassword == newPassword){
+        throw new ApiError(400, "New Password Cannot be same as Old Password")
+    }
+
+    user.password = newPassword
+    await user.save({validateBeforeSave: false})
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password has been Changed Successfully"))
+
+
+})
 export {
     userSignup,
     userLogin,
     userLogout,
     updateUserProfilePicture,
+    changeCurrentPassword,
 }
