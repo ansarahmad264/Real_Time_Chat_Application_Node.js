@@ -137,8 +137,38 @@ const userLogout = asyncHandler(async(req,res) =>{
         new ApiResponse(200, {}, "User Logged out Successfully")
     )
 })
+
+const updateUserProfilePicture = asyncHandler(async(req,res) => {
+    const profilePicLocalpath = req.file?.path
+
+    if(!profilePicLocalpath){
+        throw new ApiError(400, "Profile Picture file is missing")
+    }
+
+    const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
+    if(!profilePicture.url){
+        throw new ApiError(400,"Error while uploading the file")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                profilePic: profilePicture.url
+            }
+        },
+        {
+            new:true
+        }
+    ).select("-password -refreshToken")
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200,user,"User Profile Picture Updated Successfully"))
+})
 export {
     userSignup,
     userLogin,
-    userLogout
+    userLogout,
+    updateUserProfilePicture,
 }
