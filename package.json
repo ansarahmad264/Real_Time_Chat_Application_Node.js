@@ -1,0 +1,29 @@
+{
+  "name": "real_time_chat_application",
+  "version": "1.0.0",
+  "description": "This is a real time web based chat application that allow users to send messages to each other in real time",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "-r dotenv/config --experimental-json-modules node src/index.js"
+    
+  },
+  "keywords": [
+    "realTime",
+    "chatApplication",
+    "Node"
+  ],
+  "author": "Ansar Ahmad",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.7.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.0",
+    "multer": "^2.0.1"
+  }
+}
