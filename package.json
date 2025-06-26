@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "This is a real time web based chat application that allow users to send messages to each other in real time",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "-r dotenv/config --experimental-json-modules node src/index.js"
+    "start": "node -r dotenv/config --experimental-json-modules  src/index.js"
     
   },
   "keywords": [
