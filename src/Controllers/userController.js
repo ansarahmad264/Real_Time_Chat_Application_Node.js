@@ -193,10 +193,54 @@ const changeCurrentPassword = asyncHandler(async(req,res) => {
 
 
 })
+
+const updateUserAccountDetails = asyncHandler(async (req, res) => {
+    const { fullName, email, gender, username } = req.body;
+
+    // Build update object dynamically
+    const updateFields = {};
+    if (fullName) updateFields.fullName = fullName;
+    if (email) updateFields.email = email;
+    if (gender) updateFields.gender = gender;
+    if (username) updateFields.username = username;
+
+    // If no valid fields provided
+    if (Object.keys(updateFields).length === 0) {
+        throw new ApiError(400, "At least one field is required to update.");
+    }
+
+    // Check for existing email or username only if provided
+    if (email || username) {
+        const existingUser = await User.findOne({
+            _id: { $ne: req.user._id }, // exclude current user
+            $or: [
+                ...(email ? [{ email }] : []),
+                ...(username ? [{ username }] : [])
+            ]
+        });
+
+        if (existingUser) {
+            throw new ApiError(400, "Email or username is already in use by another user.");
+        }
+    }
+
+    // Update user
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        { $set: updateFields },
+        { new: true }
+    ).select("-password -refreshToken");
+
+    return res.status(200).json(
+        new ApiResponse(200, updatedUser, "User account details updated successfully.")
+    );
+});
+
 export {
     userSignup,
     userLogin,
     userLogout,
     updateUserProfilePicture,
     changeCurrentPassword,
+    updateUserAccountDetails,
 }

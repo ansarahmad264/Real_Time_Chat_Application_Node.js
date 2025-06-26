@@ -1,5 +1,5 @@
 import express from "express"
-import { changeCurrentPassword, updateUserProfilePicture, userLogin, userLogout, userSignup } from "../Controllers/userController.js"
+import { changeCurrentPassword, updateUserAccountDetails, updateUserProfilePicture, userLogin, userLogout, userSignup } from "../Controllers/userController.js"
 import { verifyJWT } from "../Middlewares/Auth.js"
 import { upload } from "../Middlewares/multer.js"
 
@@ -13,5 +13,6 @@ router.route("/login").post(userLogin)
 router.route("/logout").post(verifyJWT, userLogout)
 router.route("/update-profile-picture").patch(verifyJWT, upload.single("profilePic"), updateUserProfilePicture)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)
+router.route("/update-account").patch(verifyJWT, updateUserAccountDetails)
 
 export default router
