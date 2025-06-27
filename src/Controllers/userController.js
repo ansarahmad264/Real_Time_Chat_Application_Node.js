@@ -281,6 +281,19 @@ const refreshAccessToken = asyncHandler(async(req,res) => {
 
 })
 
+const getAllUsersForSidebar = asyncHandler(async(req,res) => {
+    try {
+        const loggedInUserId = req.user._id
+        const filteredUsers = await User.find({_id: {$ne: loggedInUserId}}).select("-password -refreshToken -_id")
+
+        return res.status(200).json(filteredUsers)
+        
+    } catch (error) {
+        console.log("Error in Get User for Sidebar", error.message)
+        return res.status(500).json({error: "Internal Server Error"})
+    }
+})
+
 export {
     userSignup,
     userLogin,
@@ -288,5 +301,6 @@ export {
     updateUserProfilePicture,
     changeCurrentPassword,
     updateUserAccountDetails,
-    refreshAccessToken
+    refreshAccessToken,
+    getAllUsersForSidebar
 }
