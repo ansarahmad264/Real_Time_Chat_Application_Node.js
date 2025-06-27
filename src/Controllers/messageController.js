@@ -44,6 +44,31 @@ const sendMessage = asyncHandler(async(req,res) =>{
     }
 })
 
+const getMessages = asyncHandler(async(req,res) => {
+    try {
+        const{userToChatId} = req.params
+        const senderId = req.user._id
+
+        const conversation = await Conversation.findOne({
+            participants: {$all: [senderId, userToChatId]}
+        })
+
+        if(!conversation){
+            return res.status(404).json({ message: "No conversation found" });
+        }
+
+        const messages = await Message.find({ conversationId: conversation._id })
+      .sort({ createdAt: 1 }); // Optional: oldest first
+
+        res.status(200).json(messages)
+        
+    } catch (error) {
+        console.log("Error in getMessage Controller",error.message)
+        return res.status(500).json({error: "internal Server Error"})
+    }
+})
+
 export {
-    sendMessage
+    sendMessage,
+    getMessages
 }
