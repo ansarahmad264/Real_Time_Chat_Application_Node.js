@@ -16,9 +16,11 @@ app.use(cookieParser());
 
 //IMPORT ROUTES
 import userRouter from "./Routes/userRoutes.js"
+import messageRouter from "./Routes/messageRoutes.js"
 
 //DECLARE ROUTES
 app.use("/api/v1/user", userRouter)
+app.use("/api/v2/message", messageRouter)
 
 
 export { app }
