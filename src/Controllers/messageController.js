@@ -1,7 +1,7 @@
 import Conversation from "../Models/conversation.model.js"
 import Message from "../Models/message.model.js"
 import { asyncHandler } from "../Utils/asyncHandler.js";
-// import { getRecieverSocketId, io } from "../socket/socket.js"
+import { getRecieverSocketId, io } from "../socket/socket.js"
 
 const sendMessage = asyncHandler(async(req,res) =>{
     try {
@@ -31,10 +31,10 @@ const sendMessage = asyncHandler(async(req,res) =>{
         //This will run in Parallel
         await Promise.all([conversation.save(), newMessage.save()])
 
-        // const recieverSocketId = getRecieverSocketId(recieverId)
-        // if(recieverSocketId){
-        //     io.to(recieverSocketId).emit("newMessage", newMessage)
-        // }
+        const recieverSocketId = getRecieverSocketId(recieverId)
+        if(recieverSocketId){
+            io.to(recieverSocketId).emit("newMessage", newMessage)
+        }
 
         res.status(201).json(newMessage)
         
