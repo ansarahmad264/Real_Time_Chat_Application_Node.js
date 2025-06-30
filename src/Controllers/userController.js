@@ -1,13 +1,17 @@
 import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { asyncHandler } from "../Utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../Utils/Cloudinary.js";
+//import { uploadOnCloudinary } from "../Utils/Cloudinary.js";
 import User from "../Models/userModel.js";
 import jwt from "jsonwebtoken"
 
 
 const userSignup = asyncHandler(async (req, res) => {
-    const { fullName, username, email, password, confirmPassword, gender } = req.body
+    // ALL THE COMMENTED CODE IS TO REMOVE THE IMAGE HANDLING and GENDER FIELD TEMPORARILY
+
+    // const { fullName, username, email, password, confirmPassword, gender } = req.body
+
+    const { fullName, username, email, password, confirmPassword } = req.body
 
     if (password != confirmPassword) {
         throw new ApiError(400, "Password Do not Match")
@@ -25,23 +29,27 @@ const userSignup = asyncHandler(async (req, res) => {
         throw new ApiError(400, "User with this Email or username already exist")
     }
 
-    const profilePicLocalpath = req.file?.path
-    if (!profilePicLocalpath) {
-        throw new ApiError(400, "Avatar file is required 1")
-    }
+    /*  IMAGE FUNCTIONALITY
 
-    const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
-    if (!profilePicture.url) {
-        throw new ApiError(400, "Error while uploading the file")
-    }
+        const profilePicLocalpath = req.file?.path
+        if (!profilePicLocalpath) {
+            throw new ApiError(400, "Avatar file is required 1")
+        }
+
+        const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
+        if (!profilePicture.url) {
+            throw new ApiError(400, "Error while uploading the file")
+        }
+
+    */
 
     const user = await User.create({
         fullName,
         username: username.toLowerCase(),
         email,
         password,
-        gender,
-        profilePic: profilePicture.url
+        //gender,
+        //profilePic: profilePicture.url
     })
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken")
@@ -139,34 +147,36 @@ const userLogout = asyncHandler(async (req, res) => {
         )
 })
 
-const updateUserProfilePicture = asyncHandler(async (req, res) => {
-    const profilePicLocalpath = req.file?.path
+/*
+    const updateUserProfilePicture = asyncHandler(async (req, res) => {
+        const profilePicLocalpath = req.file?.path
 
-    if (!profilePicLocalpath) {
-        throw new ApiError(400, "Profile Picture file is missing")
-    }
-
-    const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
-    if (!profilePicture.url) {
-        throw new ApiError(400, "Error while uploading the file")
-    }
-
-    const user = await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            $set: {
-                profilePic: profilePicture.url
-            }
-        },
-        {
-            new: true
+        if (!profilePicLocalpath) {
+            throw new ApiError(400, "Profile Picture file is missing")
         }
-    ).select("-password -refreshToken")
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, user, "User Profile Picture Updated Successfully"))
-})
+        const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
+        if (!profilePicture.url) {
+            throw new ApiError(400, "Error while uploading the file")
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            {
+                $set: {
+                    profilePic: profilePicture.url
+                }
+            },
+            {
+                new: true
+            }
+        ).select("-password -refreshToken")
+
+        return res
+            .status(200)
+            .json(new ApiResponse(200, user, "User Profile Picture Updated Successfully"))
+    })
+*/
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { newPassword, oldPassword } = req.body

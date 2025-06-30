@@ -21,14 +21,14 @@ const userSchema = new mongoose.Schema({
         minlength: 6,
         select: false
     },
-    gender: {
+    /* gender: {
         type: String,
         enum: ["Male", "Female"]
     },
     profilePic: {
         type: String,
         default: ""
-    },
+    }, */
     authProvider: {
         type: String,
         enum: ["local", "google"],
