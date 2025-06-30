@@ -14,7 +14,7 @@ passport.use(
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const { sub: googleId, email, name: fullName, picture } = profile._json;
+          const { sub: googleId, email, name: fullName, /*picture*/ } = profile._json;
           const username = email.split('@')[0];
   
           let user = await User.findOne({ email });
@@ -25,7 +25,7 @@ passport.use(
               email,
               googleId,
               username,
-              profilePic: picture,
+              // profilePic: picture,
               authProvider: "google"
             });
           }
