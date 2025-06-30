@@ -1,5 +1,5 @@
 import express from "express"
-import { changeCurrentPassword, getAllUsersForSidebar, refreshAccessToken, updateUserAccountDetails, updateUserProfilePicture, userLogin, userLogout, userSignup } from "../Controllers/userController.js"
+import { changeCurrentPassword, getAllUsersForSidebar, googleCallback, refreshAccessToken, updateUserAccountDetails, updateUserProfilePicture, userLogin, userLogout, userSignup } from "../Controllers/userController.js"
 import { verifyJWT } from "../Middlewares/Auth.js"
 import { upload } from "../Middlewares/multer.js"
 
@@ -7,6 +7,22 @@ const router = express.Router()
 
 router.route("/signup").post(upload.single("profilePic"), userSignup)
 router.route("/login").post(userLogin)
+
+//google Routes
+router.get( '/google', passport.authenticate('google', 
+    {
+      scope: ['profile', 'email'],
+      session: false,
+    })
+);
+
+router.get('/google/callback', passport.authenticate('google', 
+    {
+      failureRedirect: '/login',
+      session: false,
+    }),
+    googleCallback
+);
 
 
 //Secured Routes

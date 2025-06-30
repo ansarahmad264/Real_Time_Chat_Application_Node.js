@@ -298,11 +298,15 @@ const googleCallback = async (req, res) => {
     try {
       const user = req.user;
   
-      const token = generateTokenAndSetCookie(user._id, res);
+      const { accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id)
   
-      res.json({
+      res.status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
         message: 'Login successful',
-        token,
+        accessToken,
+        refreshToken,
         user: {
           _id: user._id,
           fullName: user.fullName,
@@ -310,11 +314,12 @@ const googleCallback = async (req, res) => {
           profilePic: user.profilePic,
           authProvider: user.authProvider
         },
-      });
+    });
+
     } catch (err) {
       res.status(500).json({ message: 'Internal error', error: err.message });
     }
-  };
+};
 
 export {
     userSignup,
