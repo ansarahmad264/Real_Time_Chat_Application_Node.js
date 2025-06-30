@@ -4,54 +4,63 @@ import jwt from "jsonwebtoken"
 
 const userSchema = new mongoose.Schema({
     fullName: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true  
+        type: String
     },
     username: {
         type: String,
-        required: true,
-        unique: true
+        unique: true,
+        sparse: true // only enforced if present
+    },
+    email: {
+        type: String,
+        unique: true,
+        sparse: true
     },
     password: {
         type: String,
-        required: true,
-        minlength: 6
+        minlength: 6,
+        select: false
     },
     gender: {
         type: String,
-        required: true,
         enum: ["Male", "Female"]
     },
     profilePic: {
         type: String,
         default: ""
     },
+    authProvider: {
+        type: String,
+        enum: ["local", "google"],
+        required: true,
+        default: "local"
+    },
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
     refreshToken: {
         type: String
     }
 })
 
-userSchema.pre("save", async function (next){
-    if(!this.isModified("password")) return next()
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next()
 
-    this.password = await bcryptjs.hash(this.password,10)
+    this.password = await bcryptjs.hash(this.password, 10)
     next()
 })
 
-userSchema.methods.isPasswordCorrect = async function(password){
-    return await bcryptjs.compare(password,this.password)
+userSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcryptjs.compare(password, this.password)
 }
 
-userSchema.methods.generateAccessToken = function(){
+userSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
-            _id:this._id,
-            email:this.email,
+            _id: this._id,
+            email: this.email,
             userName: this.username,
             fullName: this.fullName
         },
@@ -61,11 +70,11 @@ userSchema.methods.generateAccessToken = function(){
         }
     )
 }
-userSchema.methods.generateRefreshToken = function(){
+userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
         {
-            _id:this._id,
-            email:this.email,
+            _id: this._id,
+            email: this.email,
             userName: this.username,
             fullName: this.fullName
         },
