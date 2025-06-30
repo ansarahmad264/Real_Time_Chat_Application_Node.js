@@ -340,7 +340,7 @@ export {
     userSignup,
     userLogin,
     userLogout,
-    updateUserProfilePicture,
+    //updateUserProfilePicture,
     changeCurrentPassword,
     updateUserAccountDetails,
     refreshAccessToken,
