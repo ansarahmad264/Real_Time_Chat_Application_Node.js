@@ -294,6 +294,28 @@ const getAllUsersForSidebar = asyncHandler(async(req,res) => {
     }
 })
 
+const googleCallback = async (req, res) => {
+    try {
+      const user = req.user;
+  
+      const token = generateTokenAndSetCookie(user._id, res);
+  
+      res.json({
+        message: 'Login successful',
+        token,
+        user: {
+          _id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          profilePic: user.profilePic,
+          authProvider: user.authProvider
+        },
+      });
+    } catch (err) {
+      res.status(500).json({ message: 'Internal error', error: err.message });
+    }
+  };
+
 export {
     userSignup,
     userLogin,
@@ -302,5 +324,6 @@ export {
     changeCurrentPassword,
     updateUserAccountDetails,
     refreshAccessToken,
-    getAllUsersForSidebar
+    getAllUsersForSidebar,
+    googleCallback
 }
