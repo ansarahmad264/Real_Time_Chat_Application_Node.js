@@ -2,6 +2,7 @@ import express from "express"
 import { changeCurrentPassword, getAllUsersForSidebar, googleCallback, refreshAccessToken, updateUserAccountDetails, updateUserProfilePicture, userLogin, userLogout, userSignup } from "../Controllers/userController.js"
 import { verifyJWT } from "../Middlewares/Auth.js"
 import { upload } from "../Middlewares/multer.js"
+import passport from 'passport';
 
 const router = express.Router()
 
