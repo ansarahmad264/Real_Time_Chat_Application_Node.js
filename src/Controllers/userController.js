@@ -154,6 +154,12 @@ const userLogout = asyncHandler(async (req, res) => {
         secure: true
     }
 
+    await sendPushNotification(
+        req.user.fcmToken,
+        "Logout",
+        "You’ve successfully Logged Out!"
+    );
+
     return res
         .status(200)
         .clearCookie("accessToken", options)
