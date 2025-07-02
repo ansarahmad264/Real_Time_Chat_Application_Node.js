@@ -270,6 +270,12 @@ const updateUserAccountDetails = asyncHandler(async (req, res) => {
         { new: true }
     ).select("-password -refreshToken");
 
+    await sendPushNotification(
+        req.user.fcmToken,
+        "Update Details",
+        "User Account Details has been Updated Succesfully"
+    );
+
     return res.status(200).json(
         new ApiResponse(200, updatedUser, "User account details updated successfully.")
     );
