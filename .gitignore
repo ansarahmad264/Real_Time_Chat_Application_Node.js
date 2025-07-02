@@ -9,6 +9,7 @@ lerna-debug.log*
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+chatter-289f4-firebase-adminsdk-fbsvc-bd6ded5f47.json
 
 # Runtime data
 pids
