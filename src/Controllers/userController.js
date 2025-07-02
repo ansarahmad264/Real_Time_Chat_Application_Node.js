@@ -113,7 +113,7 @@ const userLogin = asyncHandler(async (req, res) => {
     await sendPushNotification(
         loggedInUser.fcmToken,
         "Congratulations",
-        "You’ve successfully Logged In!"
+        "You’ve Logged In successfully!"
     );
 
     const options = {
@@ -157,7 +157,7 @@ const userLogout = asyncHandler(async (req, res) => {
     await sendPushNotification(
         req.user.fcmToken,
         "Logout",
-        "You’ve successfully Logged Out!"
+        "You’ve Logged Out successfully!"
     );
 
     return res
@@ -370,7 +370,7 @@ const googleCallback = async (req, res) => {
     }
 };
 
-export const updateFcmToken = async (req, res) => {
+const updateFcmToken = async (req, res) => {
     const userId = req.user._id;
     const { fcmToken } = req.body;
   
@@ -399,5 +399,6 @@ export {
     updateUserAccountDetails,
     refreshAccessToken,
     getAllUsersForSidebar,
-    googleCallback
+    googleCallback,
+    updateFcmToken
 }

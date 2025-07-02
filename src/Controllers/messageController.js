@@ -32,16 +32,18 @@ const sendMessage = asyncHandler(async(req,res) =>{
         await Promise.all([conversation.save(), newMessage.save()])
 
         const recieverSocketId = getRecieverSocketId(recieverId)
+        
         if(recieverSocketId){
             io.to(recieverSocketId).emit("newMessage", newMessage)
-        }else{
+        }
+        else{
             // User is offline ->  Send FCM notification
             const receiver = await User.findById(recieverId);
 
             if (receiver && receiver.fcmToken) {
                 await sendFCMNotification(
                     receiver.fcmToken,
-                    "📩 New Message",
+                    "New Message",
                     `You have a new message from ${req.user.fullName || 'someone'}`,
                 );
             }
