@@ -11,7 +11,7 @@ const userSignup = asyncHandler(async (req, res) => {
 
     // const { fullName, username, email, password, confirmPassword, gender } = req.body
 
-    const { fullName, username, email, password, confirmPassword } = req.body
+    const { fullName, username, email, password, confirmPassword, fcmToken } = req.body
 
     if (password != confirmPassword) {
         throw new ApiError(400, "Password Do not Match")
@@ -48,6 +48,7 @@ const userSignup = asyncHandler(async (req, res) => {
         username: username.toLowerCase(),
         email,
         password,
+        fcmToken
         //gender,
         //profilePic: profilePicture.url
     })
@@ -56,6 +57,14 @@ const userSignup = asyncHandler(async (req, res) => {
 
     if (!createdUser) {
         throw new ApiError(500, "Server was unable to seve user to the Database")
+    }
+
+    if (fcmToken) {
+        await sendPushNotification(
+          fcmToken,
+          "Welcome to ChatApp 🚀",
+          "You’ve successfully signed up!"
+        );
     }
 
     return res.status(201).json(
