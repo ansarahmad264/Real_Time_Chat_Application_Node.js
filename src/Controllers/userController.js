@@ -370,6 +370,26 @@ const googleCallback = async (req, res) => {
     }
 };
 
+export const updateFcmToken = async (req, res) => {
+    const userId = req.user._id;
+    const { fcmToken } = req.body;
+  
+    if (!fcmToken) return res.status(400).json({ message: "FCM token is required" });
+  
+    try {
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { fcmToken },
+        { new: true }
+      );
+  
+      return res.status(200).json({ message: "FCM token updated", user });
+    } catch (error) {
+      console.error("Failed to update FCM token:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 export {
     userSignup,
     userLogin,

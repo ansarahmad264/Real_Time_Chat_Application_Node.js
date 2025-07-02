@@ -1,5 +1,5 @@
 import express from "express"
-import { changeCurrentPassword, getAllUsersForSidebar, googleCallback, refreshAccessToken, updateUserAccountDetails, /*updateUserProfilePicture,*/ userLogin, userLogout, userSignup } from "../Controllers/userController.js"
+import { changeCurrentPassword, getAllUsersForSidebar, googleCallback, refreshAccessToken, updateFcmToken, updateUserAccountDetails, /*updateUserProfilePicture,*/ userLogin, userLogout, userSignup } from "../Controllers/userController.js"
 import { verifyJWT } from "../Middlewares/Auth.js"
 //import { upload } from "../Middlewares/multer.js"
 import passport from 'passport';
@@ -35,5 +35,6 @@ router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 router.route("/update-account").patch(verifyJWT, updateUserAccountDetails)
 router.route("/refresh-token").post(refreshAccessToken)
 router.route("/get-users").get(verifyJWT, getAllUsersForSidebar)
+router.route('/update-fcm-token').post(verifyJWT, updateFcmTokenen)
 
 export default router
