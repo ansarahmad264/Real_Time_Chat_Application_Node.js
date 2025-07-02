@@ -220,6 +220,12 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     user.password = newPassword
     await user.save({ validateBeforeSave: false })
 
+    await sendPushNotification(
+        req.user.fcmToken,
+        "Change Password",
+        "Your Password has been Changed Successfully"
+    );
+
     return res
         .status(200)
         .json(new ApiResponse(200, {}, "Password has been Changed Successfully"))
