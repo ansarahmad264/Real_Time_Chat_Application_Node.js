@@ -4,6 +4,7 @@ import { asyncHandler } from "../Utils/asyncHandler.js";
 //import { uploadOnCloudinary } from "../Utils/Cloudinary.js";
 import User from "../Models/userModel.js";
 import jwt from "jsonwebtoken"
+import sendPushNotification from "../Utils/FcmNotification.js"
 
 
 const userSignup = asyncHandler(async (req, res) => {
@@ -108,6 +109,12 @@ const userLogin = asyncHandler(async (req, res) => {
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+
+    await sendPushNotification(
+        loggedInUser.fcmToken,
+        "Congratulations",
+        "You’ve successfully Logged In!"
+    );
 
     const options = {
         httpOnly: true,
