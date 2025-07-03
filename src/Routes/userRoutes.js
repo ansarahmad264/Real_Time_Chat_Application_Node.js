@@ -35,6 +35,6 @@ router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 router.route("/update-account").patch(verifyJWT, updateUserAccountDetails)
 router.route("/refresh-token").post(refreshAccessToken)
 router.route("/get-users").get(verifyJWT, getAllUsersForSidebar)
-router.route('/update-fcm-token').post(verifyJWT, updateFcmTokenen)
+router.route('/update-fcm-token').post(verifyJWT, updateFcmToken)
 
 export default router

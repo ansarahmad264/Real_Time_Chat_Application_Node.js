@@ -17,4 +17,4 @@ const sendPushNotification = async (token, title, body) => {
   }
 };
 
-module.exports = { sendPushNotification };
+export default sendPushNotification

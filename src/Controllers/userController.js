@@ -96,7 +96,7 @@ const userLogin = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All Fields are Required")
     }
 
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email }).select("+password")
     if (!user) {
         throw new ApiError(404, "This User Doesnot Exist")
     }
