@@ -49,7 +49,11 @@ const sendMessage = asyncHandler(async (req, res) => {
             }
         } */
 
-        res.status(201).json(newMessage)
+        res.status(201).json({
+            message,
+            from: `${req.user.fullName}`,
+            to: `${recieverId}`
+        });
 
     } catch (error) {
         console.log("Error in SendMessage Controler", error.message)
