@@ -10,8 +10,6 @@ import sendPushNotification from "../Utils/FcmNotification.js"
 const userSignup = asyncHandler(async (req, res) => {
     // ALL THE COMMENTED CODE IS TO REMOVE THE IMAGE HANDLING and GENDER FIELD TEMPORARILY
 
-    // const { fullName, username, email, password, confirmPassword, gender } = req.body
-
     const { fullName, username, email, password, confirmPassword, fcmToken } = req.body
 
     if (password != confirmPassword) {
@@ -29,29 +27,34 @@ const userSignup = asyncHandler(async (req, res) => {
     if (existedUser) {
         throw new ApiError(400, "User with this Email or username already exist")
     }
+   
+    //IMAGE FUNCTIONALITY
+    const profilePicLocalpath = req.file?.path
+    var profilePic;
 
-    /*  IMAGE FUNCTIONALITY
-
-        const profilePicLocalpath = req.file?.path
-        if (!profilePicLocalpath) {
-            throw new ApiError(400, "Avatar file is required 1")
-        }
-
-        const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
+    if (profilePicLocalpath) {
+        
+    
+         const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
         if (!profilePicture.url) {
             throw new ApiError(400, "Error while uploading the file")
         }
+            
+        profilePic = profilePicture.url
+    }
+    else{
+        profilePic = `https://avatar.iran.liara.run/username?username=${username}`
+    }
 
-    */
+    
 
     const user = await User.create({
         fullName,
         username: username.toLowerCase(),
         email,
         password,
-        fcmToken
-        //gender,
-        //profilePic: profilePicture.url
+        fcmToken,
+        profilePic
     })
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken")
