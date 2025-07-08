@@ -2,6 +2,7 @@ import Conversation from "../Models/conversation.model.js"
 import Message from "../Models/message.model.js"
 import { asyncHandler } from "../Utils/asyncHandler.js";
 import { getRecieverSocketId, io } from "../socket/socket.js"
+import sendPushNotification from "../Utils/FcmNotification.js";
 
 const sendMessage = asyncHandler(async (req, res) => {
     try {
@@ -36,18 +37,18 @@ const sendMessage = asyncHandler(async (req, res) => {
         if (recieverSocketId) {
             io.to(recieverSocketId).emit("newMessage", newMessage)
         }
-        /* else{
+        else{
             // User is offline ->  Send FCM notification
             const receiver = await User.findById(recieverId);
 
             if (receiver && receiver.fcmToken) {
-                await sendFCMNotification(
+                await sendPushNotification(
                     receiver.fcmToken,
                     "New Message",
                     `You have a new message from ${req.user.fullName || 'someone'}`,
                 );
             }
-        } */
+        }
 
         res.status(201).json({
             message,
