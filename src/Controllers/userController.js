@@ -355,18 +355,7 @@ const googleCallback = async (req, res) => {
         res.status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
-            .json({
-                message: 'Login successful',
-                accessToken,
-                refreshToken,
-                user: {
-                    _id: user._id,
-                    fullName: user.fullName,
-                    email: user.email,
-                    profilePic: user.profilePic,
-                    authProvider: user.authProvider
-                },
-            });
+            .redirect("http://localhost:3000/chats")
 
     } catch (err) {
         res.status(500).json({ message: 'Internal error', error: err.message });
