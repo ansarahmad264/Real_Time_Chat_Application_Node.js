@@ -6,7 +6,7 @@ import User from "../Models/userModel.js";
 import jwt from "jsonwebtoken"
 import sendPushNotification from "../Utils/FcmNotification.js"
 import crypto from "crypto"
-import { sendPasswordResetEmail } from "../Utils/emails.js";
+import { sendPasswordResetEmail, sendResetSuccessEmail } from "../Utils/emails.js";
 
 
 const userSignup = asyncHandler(async (req, res) => {
@@ -411,6 +411,37 @@ const forgotPassword = asyncHandler(async (req, res) => {
 		res.status(400).json({ success: false, message: error.message });
 	}
 });
+
+const resetPassword = asyncHandler(async (req, res) => {
+	try {
+		const { token } = req.params;
+		const { password } = req.body;
+
+		const user = await User.findOne({
+			resetPasswordToken: token,
+			resetPasswordExpiresAt: { $gt: Date.now() },
+		});
+
+		if (!user) {
+			return res.status(400).json({ success: false, message: "Invalid or expired reset token" });
+		}
+
+		// update password
+		
+		user.password = password;
+		user.resetPasswordToken = undefined;
+		user.resetPasswordExpiresAt = undefined;
+		await user.save();
+
+		await sendResetSuccessEmail(user.email);
+
+		res.status(200).json({ success: true, message: "Password reset successful" });
+	} catch (error) {
+		console.log("Error in resetPassword ", error);
+		res.status(400).json({ success: false, message: error.message });
+	}
+});
+
 export {
     userSignup,
     userLogin,
@@ -422,5 +453,6 @@ export {
     getAllUsersForSidebar,
     googleCallback,
     updateFcmToken,
-    forgotPassword
+    forgotPassword,
+    resetPassword
 }
