@@ -48,7 +48,7 @@ const userSignup = asyncHandler(async (req, res) => {
         profilePic = `https://avatar.iran.liara.run/username?username=${username}`
     }
 
-    
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
 
     const user = await User.create({
         fullName,
@@ -56,7 +56,9 @@ const userSignup = asyncHandler(async (req, res) => {
         email,
         password,
         fcmToken,
-        profilePic
+        profilePic,
+        verificationToken,
+		verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, //24 hour
     })
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken")
