@@ -6,7 +6,7 @@ import User from "../Models/userModel.js";
 import jwt from "jsonwebtoken"
 import sendPushNotification from "../Utils/FcmNotification.js"
 import crypto from "crypto"
-import { sendPasswordResetEmail, sendResetSuccessEmail } from "../Utils/emails.js";
+import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail } from "../Utils/emails.js";
 
 
 const userSignup = asyncHandler(async (req, res) => {
@@ -74,6 +74,8 @@ const userSignup = asyncHandler(async (req, res) => {
           "You’ve successfully signed up!"
         );
     }
+
+    await sendVerificationEmail(user.email, verificationToken);
 
     return res.status(201).json(
         new ApiResponse(200, createdUser, "User registered successfully")
