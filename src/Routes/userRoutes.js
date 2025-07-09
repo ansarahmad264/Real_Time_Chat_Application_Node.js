@@ -1,5 +1,5 @@
 import express from "express"
-import { changeCurrentPassword, getAllUsersForSidebar, googleCallback, refreshAccessToken, updateFcmToken, updateUserAccountDetails, /*updateUserProfilePicture,*/ userLogin, userLogout, userSignup } from "../Controllers/userController.js"
+import { changeCurrentPassword, forgotPassword, getAllUsersForSidebar, googleCallback, refreshAccessToken, resetPassword, updateFcmToken, updateUserAccountDetails, /*updateUserProfilePicture,*/ userLogin, userLogout, userSignup } from "../Controllers/userController.js"
 import { verifyJWT } from "../Middlewares/Auth.js"
 import { upload } from "../Middlewares/multer.js"
 import passport from 'passport';
@@ -25,6 +25,9 @@ router.get('/google/callback', passport.authenticate('google',
     googleCallback
 );
 
+router.post("/forgot-password", forgotPassword);
+
+router.post("/reset-password/:token", resetPassword);
 
 //Secured Routes
 router.route("/logout").post(verifyJWT, userLogout)
