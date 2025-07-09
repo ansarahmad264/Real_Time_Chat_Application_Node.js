@@ -42,14 +42,8 @@ const userSchema = new mongoose.Schema({
     fcmToken: {
         type: String
     },
-    otp: {
-      type: Number,
-      default: null,
-    },
-    otp_verified: {
-      type: Boolean,
-      default: false,
-    }
+    resetPasswordToken: String,
+	resetPasswordExpiresAt: Date,
 })
 
 userSchema.pre("save", async function (next) {
