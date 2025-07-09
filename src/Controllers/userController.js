@@ -5,6 +5,7 @@ import { asyncHandler } from "../Utils/asyncHandler.js";
 import User from "../Models/userModel.js";
 import jwt from "jsonwebtoken"
 import sendPushNotification from "../Utils/FcmNotification.js"
+import crypto from "crypto"
 
 
 const userSignup = asyncHandler(async (req, res) => {
@@ -341,7 +342,7 @@ const getAllUsersForSidebar = asyncHandler(async (req, res) => {
     }
 })
 
-const googleCallback = async (req, res) => {
+const googleCallback = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
 
@@ -360,9 +361,9 @@ const googleCallback = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'Internal error', error: err.message });
     }
-};
+});
 
-const updateFcmToken = async (req, res) => {
+const updateFcmToken = asyncHandler(async (req, res) => {
     const userId = req.user._id;
     const { fcmToken } = req.body;
   
@@ -380,8 +381,7 @@ const updateFcmToken = async (req, res) => {
       console.error("Failed to update FCM token:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
-};
-
+});
 export {
     userSignup,
     userLogin,
