@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema({
     fcmToken: {
         type: String
     },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
     resetPasswordToken: String,
 	resetPasswordExpiresAt: Date,
     verificationToken: String,
