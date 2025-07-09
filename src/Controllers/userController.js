@@ -64,8 +64,10 @@ const userSignup = asyncHandler(async (req, res) => {
     const createdUser = await User.findById(user._id).select("-password -refreshToken")
 
     if (!createdUser) {
-        throw new ApiError(500, "Server was unable to seve user to the Database")
+        throw new ApiError(500, "Server was unable to save user to the Database")
     }
+
+    await sendVerificationEmail(user.email, verificationToken);
 
     if (fcmToken) {
         await sendPushNotification(
@@ -74,8 +76,6 @@ const userSignup = asyncHandler(async (req, res) => {
           "You’ve successfully signed up!"
         );
     }
-
-    await sendVerificationEmail(user.email, verificationToken);
 
     return res.status(201).json(
         new ApiResponse(200, createdUser, "User registered successfully")

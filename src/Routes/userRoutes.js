@@ -1,5 +1,5 @@
 import express from "express"
-import { changeCurrentPassword, forgotPassword, getAllUsersForSidebar, googleCallback, refreshAccessToken, resetPassword, updateFcmToken, updateUserAccountDetails, /*updateUserProfilePicture,*/ userLogin, userLogout, userSignup } from "../Controllers/userController.js"
+import { changeCurrentPassword, forgotPassword, getAllUsersForSidebar, googleCallback, refreshAccessToken, resetPassword, updateFcmToken, updateUserAccountDetails, /*updateUserProfilePicture,*/ userLogin, userLogout, userSignup, verifyEmail } from "../Controllers/userController.js"
 import { verifyJWT } from "../Middlewares/Auth.js"
 import { upload } from "../Middlewares/multer.js"
 import passport from 'passport';
