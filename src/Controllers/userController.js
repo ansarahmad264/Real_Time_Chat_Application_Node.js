@@ -29,22 +29,22 @@ const userSignup = asyncHandler(async (req, res) => {
     if (existedUser) {
         throw new ApiError(400, "User with this Email or username already exist")
     }
-   
+
     //IMAGE FUNCTIONALITY
     const profilePicLocalpath = req.file?.path
     var profilePic;
 
     if (profilePicLocalpath) {
-        
-    
-         const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
+
+
+        const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
         if (!profilePicture.url) {
             throw new ApiError(400, "Error while uploading the file")
         }
-            
+
         profilePic = profilePicture.url
     }
-    else{
+    else {
         profilePic = `https://avatar.iran.liara.run/username?username=${username}`
     }
 
@@ -58,7 +58,7 @@ const userSignup = asyncHandler(async (req, res) => {
         fcmToken,
         profilePic,
         verificationToken,
-		verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, //24 hour
+        verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, //24 hour
     })
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken")
@@ -71,9 +71,9 @@ const userSignup = asyncHandler(async (req, res) => {
 
     if (fcmToken) {
         await sendPushNotification(
-          fcmToken,
-          "Welcome to ChatApp 🚀",
-          "You’ve successfully signed up!"
+            fcmToken,
+            "Welcome to ChatApp 🚀",
+            "You’ve successfully signed up!"
         );
     }
 
@@ -83,36 +83,36 @@ const userSignup = asyncHandler(async (req, res) => {
 })
 
 const verifyEmail = asyncHandler(async (req, res) => {
-	const { code } = req.body;
-	try {
-		const user = await User.findOne({
-			verificationToken: code,
-			verificationTokenExpiresAt: { $gt: Date.now() },
-		});
+    const { code } = req.body;
+    try {
+        const user = await User.findOne({
+            verificationToken: code,
+            verificationTokenExpiresAt: { $gt: Date.now() },
+        });
 
-		if (!user) {
-			return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
-		}
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
+        }
 
-		user.isVerified = true;
-		user.verificationToken = undefined;
-		user.verificationTokenExpiresAt = undefined;
-		await user.save();
+        user.isVerified = true;
+        user.verificationToken = undefined;
+        user.verificationTokenExpiresAt = undefined;
+        await user.save();
 
-		await sendWelcomeEmail(user.email, user.name);
+        await sendWelcomeEmail(user.email, user.name);
 
-		res.status(200).json({
-			success: true,
-			message: "Email verified successfully",
-			user: {
-				...user._doc,
-				password: undefined,
-			},
-		});
-	} catch (error) {
-		console.log("error in verifyEmail ", error);
-		res.status(500).json({ success: false, message: "Server error" });
-	}
+        res.status(200).json({
+            success: true,
+            message: "Email verified successfully",
+            user: {
+                ...user._doc,
+                password: undefined,
+            },
+        });
+    } catch (error) {
+        console.log("error in verifyEmail ", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
 });
 
 const generateAccessAndRefreshToken = async (userId) => {
@@ -142,7 +142,7 @@ const userLogin = asyncHandler(async (req, res) => {
         throw new ApiError(404, "This User Doesnot Exist")
     }
 
-    if(user.authProvider == "google"){
+    if (user.authProvider == "google") {
         throw new ApiError(404, "You have registed via social platform , please try to go with that!")
     }
 
@@ -214,36 +214,34 @@ const userLogout = asyncHandler(async (req, res) => {
         )
 })
 
-/*
-    const updateUserProfilePicture = asyncHandler(async (req, res) => {
-        const profilePicLocalpath = req.file?.path
+const updateUserProfilePicture = asyncHandler(async (req, res) => {
+    const profilePicLocalpath = req.file?.path
 
-        if (!profilePicLocalpath) {
-            throw new ApiError(400, "Profile Picture file is missing")
-        }
+    if (!profilePicLocalpath) {
+        throw new ApiError(400, "Profile Picture file is missing")
+    }
 
-        const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
-        if (!profilePicture.url) {
-            throw new ApiError(400, "Error while uploading the file")
-        }
+    const profilePicture = await uploadOnCloudinary(profilePicLocalpath)
+    if (!profilePicture.url) {
+        throw new ApiError(400, "Error while uploading the file")
+    }
 
-        const user = await User.findByIdAndUpdate(
-            req.user._id,
-            {
-                $set: {
-                    profilePic: profilePicture.url
-                }
-            },
-            {
-                new: true
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                profilePic: profilePicture.url
             }
-        ).select("-password -refreshToken")
+        },
+        {
+            new: true
+        }
+    ).select("-password -refreshToken")
 
-        return res
-            .status(200)
-            .json(new ApiResponse(200, user, "User Profile Picture Updated Successfully"))
-    })
-*/
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "User Profile Picture Updated Successfully"))
+})
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { newPassword, oldPassword } = req.body
@@ -407,86 +405,86 @@ const googleCallback = asyncHandler(async (req, res) => {
 const updateFcmToken = asyncHandler(async (req, res) => {
     const userId = req.user._id;
     const { fcmToken } = req.body;
-  
+
     if (!fcmToken) return res.status(400).json({ message: "FCM token is required" });
-  
+
     try {
-      const user = await User.findByIdAndUpdate(
-        userId,
-        { fcmToken },
-        { new: true }
-      );
-  
-      return res.status(200).json({ message: "FCM token updated", user });
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { fcmToken },
+            { new: true }
+        );
+
+        return res.status(200).json({ message: "FCM token updated", user });
     } catch (error) {
-      console.error("Failed to update FCM token:", error);
-      return res.status(500).json({ message: "Internal server error" });
+        console.error("Failed to update FCM token:", error);
+        return res.status(500).json({ message: "Internal server error" });
     }
 });
 
 const forgotPassword = asyncHandler(async (req, res) => {
-    const {email} = req.body;
-	try {
-		const user = await User.findOne({ email });
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
 
-		if (!user) {
-			return res.status(400).json({ success: false, message: "User not found" });
-		}
+        if (!user) {
+            return res.status(400).json({ success: false, message: "User not found" });
+        }
 
-		// Generate reset token
-		const resetToken = crypto.randomBytes(20).toString("hex");
-		const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
+        // Generate reset token
+        const resetToken = crypto.randomBytes(20).toString("hex");
+        const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
 
-		user.resetPasswordToken = resetToken;
-		user.resetPasswordExpiresAt = resetTokenExpiresAt;
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpiresAt = resetTokenExpiresAt;
 
-		await user.save();
+        await user.save();
 
-		// send email
-		await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
+        // send email
+        await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
 
-		res.status(200).json({ success: true, message: "Password reset link sent to your email" });
-	} catch (error) {
-		console.log("Error in forgotPassword ", error);
-		res.status(400).json({ success: false, message: error.message });
-	}
+        res.status(200).json({ success: true, message: "Password reset link sent to your email" });
+    } catch (error) {
+        console.log("Error in forgotPassword ", error);
+        res.status(400).json({ success: false, message: error.message });
+    }
 });
 
 const resetPassword = asyncHandler(async (req, res) => {
-	try {
-		const { token } = req.params;
-		const { password } = req.body;
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
 
-		const user = await User.findOne({
-			resetPasswordToken: token,
-			resetPasswordExpiresAt: { $gt: Date.now() },
-		});
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpiresAt: { $gt: Date.now() },
+        });
 
-		if (!user) {
-			return res.status(400).json({ success: false, message: "Invalid or expired reset token" });
-		}
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid or expired reset token" });
+        }
 
-		// update password
-		
-		user.password = password;
-		user.resetPasswordToken = undefined;
-		user.resetPasswordExpiresAt = undefined;
-		await user.save();
+        // update password
 
-		await sendResetSuccessEmail(user.email);
+        user.password = password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpiresAt = undefined;
+        await user.save();
 
-		res.status(200).json({ success: true, message: "Password reset successful" });
-	} catch (error) {
-		console.log("Error in resetPassword ", error);
-		res.status(400).json({ success: false, message: error.message });
-	}
+        await sendResetSuccessEmail(user.email);
+
+        res.status(200).json({ success: true, message: "Password reset successful" });
+    } catch (error) {
+        console.log("Error in resetPassword ", error);
+        res.status(400).json({ success: false, message: error.message });
+    }
 });
 
 export {
     userSignup,
     userLogin,
     userLogout,
-    //updateUserProfilePicture,
+    updateUserProfilePicture,
     changeCurrentPassword,
     updateUserAccountDetails,
     refreshAccessToken,
