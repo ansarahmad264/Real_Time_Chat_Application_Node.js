@@ -15,13 +15,15 @@ passport.use(
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const { sub: googleId, email, name: fullName, /*picture*/ } = profile._json;
+          const { sub: googleId, email, name: fullName, picture } = profile._json;
           const username = email.split('@')[0];
   
           let user = await User.findOne({ email });
 
-          if(user.authProvider == "local"){
-            throw new ApiError(400,"You have registed via manual Signup , please try to Login using your Password!")
+          if(user){
+            if(user.authProvider == "local"){
+              throw new ApiError(400,"You have registed via manual Signup , please try to Login using your Password!")
+            }
           }
   
           if (!user) {
@@ -30,7 +32,7 @@ passport.use(
               email,
               googleId,
               username,
-              // profilePic: picture,
+              profilePic: picture,
               authProvider: "google"
             });
           }
