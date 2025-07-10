@@ -2,6 +2,7 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import dotenv from 'dotenv';
 import User from '../models/userModel.js';
+import { ApiError } from '../Utils/ApiError.js';
 
 dotenv.config();
 
@@ -18,6 +19,10 @@ passport.use(
           const username = email.split('@')[0];
   
           let user = await User.findOne({ email });
+
+          if(user.authProvider == "local"){
+            throw new ApiError(400,"You have registed via manual Signup , please try to Login using your Password!")
+          }
   
           if (!user) {
             user = await User.create({

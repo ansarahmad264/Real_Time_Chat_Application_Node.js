@@ -142,6 +142,10 @@ const userLogin = asyncHandler(async (req, res) => {
         throw new ApiError(404, "This User Doesnot Exist")
     }
 
+    if(user.authProvider == "google"){
+        throw new ApiError(404, "You have registed via social platform , please try to go with that!")
+    }
+
     const isPasswordValid = await user.isPasswordCorrect(password)
     if (!isPasswordValid) {
         throw new ApiError(404, "Invalid User Credentials")
