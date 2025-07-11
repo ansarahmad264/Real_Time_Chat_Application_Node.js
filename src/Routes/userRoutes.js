@@ -1,5 +1,5 @@
 import express from "express"
-import { changeCurrentPassword, findUserByEmail, forgotPassword, getAllUsersForSidebar, getChattedUsers, googleCallback, refreshAccessToken, resetPassword, updateFcmToken, updateUserAccountDetails, updateUserProfilePicture, userLogin, userLogout, userSignup, verifyEmail } from "../Controllers/userController.js"
+import { blockUser, changeCurrentPassword, findUserByEmail, forgotPassword, getAllUsersForSidebar, getChattedUsers, googleCallback, refreshAccessToken, resetPassword, unblockUser, updateFcmToken, updateUserAccountDetails, updateUserProfilePicture, userLogin, userLogout, userSignup, verifyEmail } from "../Controllers/userController.js"
 import { verifyJWT } from "../Middlewares/Auth.js"
 import { upload } from "../Middlewares/multer.js"
 import passport from 'passport';
@@ -39,4 +39,8 @@ router.route("/get-all-users").get(verifyJWT, getAllUsersForSidebar)
 router.route('/update-fcm-token').post(verifyJWT, updateFcmToken)
 router.route('/get-users').get(verifyJWT, getChattedUsers)
 router.route('/find-user').post(verifyJWT, findUserByEmail)
+router.route('/block-user/:userToBlockId').post(verifyJWT,blockUser)
+router.route('/unblock-user/:userToUnblockId').post(verifyJWT, unblockUser)
+
+
 export default router
