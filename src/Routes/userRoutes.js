@@ -1,5 +1,5 @@
 import express from "express"
-import { changeCurrentPassword, forgotPassword, getAllUsersForSidebar, googleCallback, refreshAccessToken, resetPassword, updateFcmToken, updateUserAccountDetails, /*updateUserProfilePicture,*/ userLogin, userLogout, userSignup, verifyEmail } from "../Controllers/userController.js"
+import { changeCurrentPassword, forgotPassword, getAllUsersForSidebar, getChattedUsers, googleCallback, refreshAccessToken, resetPassword, updateFcmToken, updateUserAccountDetails, updateUserProfilePicture, userLogin, userLogout, userSignup, verifyEmail } from "../Controllers/userController.js"
 import { verifyJWT } from "../Middlewares/Auth.js"
 import { upload } from "../Middlewares/multer.js"
 import passport from 'passport';
@@ -31,11 +31,12 @@ router.post("/reset-password/:token", resetPassword);
 
 //Secured Routes
 router.route("/logout").post(verifyJWT, userLogout)
-//router.route("/update-profile-picture").patch(verifyJWT, upload.single("profilePic"), updateUserProfilePicture)
+router.route("/update-profile-picture").patch(verifyJWT, upload.single("profilePic"), updateUserProfilePicture)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 router.route("/update-account").patch(verifyJWT, updateUserAccountDetails)
 router.route("/refresh-token").post(refreshAccessToken)
-router.route("/get-users").get(verifyJWT, getAllUsersForSidebar)
+router.route("/get-all-users").get(verifyJWT, getAllUsersForSidebar)
 router.route('/update-fcm-token').post(verifyJWT, updateFcmToken)
+router.route('/get-users').get(verifyJWT, getChattedUsers)
 
 export default router
