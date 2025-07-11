@@ -612,6 +612,40 @@ const blockUser = asyncHandler(async (req, res) => {
     }
 });
 
+const unblockUser = asyncHandler(async (req, res) => {
+    try {
+        const currentUserId = req.user._id;
+        const { userIdToUnblock } = req.params;
+
+        if (currentUserId.toString() === userIdToUnblock) {
+            throw new ApiError(400, "You cannot unblock yourself.");
+        }
+
+        const user = await User.findById(currentUserId);
+        if (!user) {
+            throw new ApiError(404, "User not found.");
+        }
+
+        //indexOf find the index of the value in array
+        // if found return 1 if not found retrun -1
+        const index = user.blockedUsers.indexOf(userIdToUnblock);
+        if (index === -1) {
+            return res.status(200).json({ message: "User is not blocked." });
+        }
+
+        //modifies the original array by removing or replacing existing elements and/or adding new ones.
+        //1 tells it to remove one item starting from that index.
+        user.blockedUsers.splice(index, 1);
+        await user.save();
+
+        return res.status(200).json({ message: "User unblocked successfully." });
+
+    } catch (error) {
+        console.log("Internal Server Error", error);
+    }
+});
+
+
 
 export {
     userSignup,
@@ -630,4 +664,5 @@ export {
     getChattedUsers,
     findUserByEmail,
     blockUser,
+    unblockUser,
 }
