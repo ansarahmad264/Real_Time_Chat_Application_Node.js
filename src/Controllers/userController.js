@@ -553,6 +553,34 @@ const getChattedUsers = asyncHandler(async (req, res) => {
     return users;
 });
 
+const findUserByEmail = asyncHandler(async (req, res) => {
+    try {
+        const { email } = req.body;
+        const currentUserId = req.user._id;
+    
+        if (!email || typeof email !== "string") {
+            throw new ApiError(400, "A valid email query is required");
+        }
+    
+        // Case-insensitive email match
+        const user = await User.findOne({
+            email: { $regex: `^${email.trim()}$`, $options: "i" },
+            _id: { $ne: currentUserId } // prevent returning the current user
+        }).select("fullName email profilePic username");
+    
+        if (!user) {
+            throw new ApiError(404, "No user found with that email");
+        }
+    
+        res.status(200).json({
+            user
+        });
+    } catch (error) {
+        console.log("Internal Server Error", error)
+    }
+});
+
+
 
 export {
     userSignup,
@@ -568,5 +596,6 @@ export {
     forgotPassword,
     resetPassword,
     verifyEmail,
-    getChattedUsers
+    getChattedUsers,
+    findUserByEmail,
 }
