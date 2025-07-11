@@ -583,6 +583,34 @@ const findUserByEmail = asyncHandler(async (req, res) => {
     }
 });
 
+const blockUser = asyncHandler(async (req, res) => {
+    try {
+        const currentUserId = req.user._id;
+        const { userIdToBlock } = req.params;
+      
+        if (currentUserId.toString() === userIdToBlock) {
+          throw new ApiError(400, "You cannot block yourself.");
+        }
+    
+        const user = await User.findById(currentUserId);
+        if (!user) {
+          throw new ApiError(404, "User not found.");
+        }
+      
+        if (user.blockedUsers.includes(userIdToBlock)) {
+          return res.status(200).json({ message: "User already blocked." });
+        }
+      
+        user.blockedUsers.push(userIdToBlock);
+        await user.save();
+      
+        return res.status(200)
+        .json({ message: "User blocked successfully." });
+    
+    } catch (error) {
+        console.log("Internal Server Error", error)        
+    }
+});
 
 
 export {
@@ -601,4 +629,5 @@ export {
     verifyEmail,
     getChattedUsers,
     findUserByEmail,
+    blockUser,
 }
