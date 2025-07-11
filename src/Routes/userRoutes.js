@@ -39,8 +39,8 @@ router.route("/get-all-users").get(verifyJWT, getAllUsersForSidebar)
 router.route('/update-fcm-token').post(verifyJWT, updateFcmToken)
 router.route('/get-users').get(verifyJWT, getChattedUsers)
 router.route('/find-user').post(verifyJWT, findUserByEmail)
-router.route('/block-user/:userToBlockId').post(verifyJWT,blockUser)
-router.route('/unblock-user/:userToUnblockId').post(verifyJWT, unblockUser)
+router.route('/block-user/:userIdToBlock').post(verifyJWT,blockUser)
+router.route('/unblock-user/:userIdToUnblock').post(verifyJWT, unblockUser)
 
 
 export default router

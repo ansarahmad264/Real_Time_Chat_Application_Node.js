@@ -9,6 +9,7 @@ import crypto from "crypto"
 import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../Utils/emails.js";
 import Message from "../Models/message.model.js"
 import mongoose from "mongoose";
+import { Console } from "console";
 
 
 const userSignup = asyncHandler(async (req, res) => {
@@ -600,12 +601,12 @@ const blockUser = asyncHandler(async (req, res) => {
         if (user.blockedUsers.includes(userIdToBlock)) {
           return res.status(200).json({ message: "User already blocked." });
         }
-      
+        console.log(userIdToBlock)
         user.blockedUsers.push(userIdToBlock);
         await user.save();
-      
+        console.log(user.blockedUsers)
         return res.status(200)
-        .json({ message: "User blocked successfully." });
+        .json({ message: "User blocked successfully." , user});
     
     } catch (error) {
         console.log("Internal Server Error", error)        

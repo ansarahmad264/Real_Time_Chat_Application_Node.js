@@ -1,5 +1,5 @@
-import {asyncHandler} from "express-async-handler";
-import { User } from "../models/user.model.js";
+import { asyncHandler } from "../Utils/asyncHandler.js";
+import User from "../Models/userModel.js"
 import { ApiError } from "../Utils/ApiError.js";
 
 export const dmProtect = asyncHandler(async (req, res, next) => {
