@@ -572,9 +572,11 @@ const findUserByEmail = asyncHandler(async (req, res) => {
             throw new ApiError(404, "No user found with that email");
         }
     
-        res.status(200).json({
+        return res.status(200)
+        .json({
             user
         });
+        
     } catch (error) {
         console.log("Internal Server Error", error)
     }
