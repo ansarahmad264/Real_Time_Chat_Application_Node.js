@@ -7,6 +7,8 @@ import jwt from "jsonwebtoken"
 import sendPushNotification from "../Utils/FcmNotification.js"
 import crypto from "crypto"
 import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../Utils/emails.js";
+import Message from "../Models/message.model.js"
+import mongoose from "mongoose";
 
 
 const userSignup = asyncHandler(async (req, res) => {
