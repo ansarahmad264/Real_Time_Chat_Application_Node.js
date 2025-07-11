@@ -1,7 +1,7 @@
 import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { asyncHandler } from "../Utils/asyncHandler.js";
-//import { uploadOnCloudinary } from "../Utils/Cloudinary.js";
+import { uploadOnCloudinary } from "../Utils/Cloudinary.js";
 import User from "../Models/userModel.js";
 import jwt from "jsonwebtoken"
 import sendPushNotification from "../Utils/FcmNotification.js"
@@ -370,6 +370,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
+//! Depracated...! Do Not Use
 const getAllUsersForSidebar = asyncHandler(async (req, res) => {
     try {
         const loggedInUserId = req.user._id
