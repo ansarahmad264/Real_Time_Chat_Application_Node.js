@@ -484,57 +484,69 @@ const getChattedUsers = asyncHandler(async (req, res) => {
 
     const currentUserId = req.user._id
 
-    const users = await Message.aggregate([
-        {
-            //Find messages where the current user is either the senderId or recieverId.
-            $match: {
-                $or: [
-                    { senderId: new mongoose.Types.ObjectId(currentUserId) },
-                    { recieverId: new mongoose.Types.ObjectId(currentUserId) }
-                ]
-            }
-        },
-        {
-            //From each message, figure out who the other user is (not you).
-            $project: {
-                otherUser: {
-                    $cond: [
-                        { $eq: ["$senderId", new mongoose.Types.ObjectId(currentUserId)] },
-                        "$recieverId",
-                        "$senderId"
+    try {
+        const users = await Message.aggregate([
+            {
+                //Find messages where the current user is either the senderId or recieverId.
+                $match: {
+                    $or: [
+                        { senderId: new mongoose.Types.ObjectId(currentUserId) },
+                        { recieverId: new mongoose.Types.ObjectId(currentUserId) }
                     ]
                 }
+            },
+            {
+                //From each message, figure out who the other user is (not you).
+                $project: {
+                    otherUser: {
+                        $cond: [
+                            { $eq: ["$senderId", new mongoose.Types.ObjectId(currentUserId)] },
+                            "$recieverId",
+                            "$senderId"
+                        ]
+                    }
+                }
+            },
+            {
+                //Get unique users only (no duplicates).
+                $group: {
+                    _id: "$otherUser"
+                }
+            },
+            {
+                //Fetch the details of those users from the users collection.
+                $lookup: {
+                    from: "users",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "userInfo"
+                }
+            },
+            {
+                $unwind: "$userInfo"
+            },
+            {
+                //Return only the info you want: name, email, etc.
+                $project: {
+                    _id: "$userInfo._id",
+                    fullName: "$userInfo.fullName",
+                    email: "$userInfo.email",
+                    profilePic: "$userInfo.profilePic",
+                    username: "$userInfo.username"
+                }
             }
-        },
-        {
-            //Get unique users only (no duplicates).
-            $group: {
-                _id: "$otherUser"
-            }
-        },
-        {
-            //Fetch the details of those users from the users collection.
-            $lookup: {
-                from: "users",
-                localField: "_id",
-                foreignField: "_id",
-                as: "userInfo"
-            }
-        },
-        {
-            $unwind: "$userInfo"
-        },
-        {
-            //Return only the info you want: name, email, etc.
-            $project: {
-                _id: "$userInfo._id",
-                fullName: "$userInfo.fullName",
-                email: "$userInfo.email",
-                profilePic: "$userInfo.profilePic",
-                username: "$userInfo.username"
-            }
+        ]);
+
+        if(!users || users == ""){
+            throw new ApiError(404, "No users found")
         }
-    ]);
+
+        res.status(200).json(users);
+
+    } catch (error) {
+        console.log("Error fetching Users", error);
+        throw new ApiError(500, "Internal Server Error")
+    }
 
     return users;
 });
