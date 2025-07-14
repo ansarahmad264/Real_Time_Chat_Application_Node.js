@@ -4,64 +4,82 @@ import { asyncHandler } from "../Utils/asyncHandler.js";
 import { getRecieverSocketId, io } from "../socket/socket.js"
 import sendPushNotification from "../Utils/FcmNotification.js";
 import User from "../Models/userModel.js";
+import { chatWithMemory } from "../llm/ChatbotLangGraph.js"
 
 const sendMessage = asyncHandler(async (req, res) => {
     try {
-        const { message } = req.body
-        const { recieverId } = req.params
-        const senderId = req.user._id
+        const { message } = req.body;
+        const { recieverId } = req.params;
+        const senderId = req.user._id;
+        const AI_USER_ID = process.env.AI_USER_ID;
 
-        var conversation = await Conversation.findOne({
-            participants: {
-                $all: [senderId, recieverId]
-            }
-        })
+        // 🔄 Get or create conversation
+        let conversation = await Conversation.findOne({
+            participants: { $all: [senderId, recieverId] }
+        });
 
         if (!conversation) {
             conversation = await Conversation.create({
                 participants: [senderId, recieverId]
-            })
+            });
         }
 
-        const newMessage = new Message({
+        // 💬 Save user's message
+        const userMessage = new Message({
             senderId,
             recieverId,
             message,
             conversationId: conversation._id
-        })
+        });
 
-        //This will run in Parallel
-        await Promise.all([conversation.save(), newMessage.save()])
+        await Promise.all([conversation.save(), userMessage.save()]);
 
-        const recieverSocketId = getRecieverSocketId(recieverId)
+        // 👇 If chatting with the AI bot
+        if (recieverId.toString() === AI_USER_ID) {
+            const aiReply = await chatWithMemory(message);
 
-        if (recieverSocketId) {
-            io.to(recieverSocketId).emit("newMessage", newMessage)
-        }
-        else{
-            // User is offline ->  Send FCM notification
-            const receiver = await User.findById(recieverId);
+            const aiMessage = new Message({
+                senderId: AI_USER_ID,
+                recieverId: senderId,
+                message: aiReply,
+                conversationId: conversation._id
+            });
 
-            if (receiver && receiver.fcmToken) {
-                await sendPushNotification(
-                    receiver.fcmToken,
-                    "New Message",
-                    `You have a new message from ${req.user.fullName || 'someone'}`,
-                );
+            await aiMessage.save();
+
+            const recieverSocketId = getRecieverSocketId(senderId); // send reply back to original sender
+            if (recieverSocketId) {
+                io.to(recieverSocketId).emit("newMessage", aiMessage);
+            }
+        } else {
+            // 📲 Notify human recipient
+            const recieverSocketId = getRecieverSocketId(recieverId);
+            if (recieverSocketId) {
+                io.to(recieverSocketId).emit("newMessage", userMessage);
+            } else {
+                const receiver = await User.findById(recieverId);
+                if (receiver?.fcmToken) {
+                    await sendPushNotification(
+                        receiver.fcmToken,
+                        "New Message",
+                        `You have a new message from ${req.user.fullName || 'someone'}`,
+                    );
+                }
             }
         }
 
         res.status(201).json({
             message,
-            from: `${req.user.fullName}`,
-            to: `${recieverId}`
+            from: req.user.fullName,
+            to: recieverId
         });
 
     } catch (error) {
-        console.log("Error in SendMessage Controler", error.message)
-        return res.status(500).json({ error: "internal Server Error" })
+        console.log("Error in SendMessage Controller", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-})
+});
+
 
 const getMessages = asyncHandler(async (req, res) => {
     try {
