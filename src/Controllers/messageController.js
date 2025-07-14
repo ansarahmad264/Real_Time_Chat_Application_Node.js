@@ -4,7 +4,7 @@ import { asyncHandler } from "../Utils/asyncHandler.js";
 import { getRecieverSocketId, io } from "../socket/socket.js"
 import sendPushNotification from "../Utils/FcmNotification.js";
 import User from "../Models/userModel.js";
-import { chatWithMemory } from "../llm/ChatbotLangGraph.js"
+import { chatWithMemory } from "../Chatbot/ChatbotLangGraph.js"
 
 const sendMessage = asyncHandler(async (req, res) => {
     try {
