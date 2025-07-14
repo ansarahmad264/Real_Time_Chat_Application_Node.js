@@ -36,7 +36,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 
         // 👇 If chatting with the AI bot
         if (recieverId.toString() === AI_USER_ID) {
-            const aiReply = await chatWithMemory(message);
+            const aiReply = await chatWithMemory(message, senderId);
 
             const aiMessage = new Message({
                 senderId: AI_USER_ID,
