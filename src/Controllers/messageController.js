@@ -194,11 +194,19 @@ const clearConversation = asyncHandler(async(req,res)=>{
     }
 })
 
+const getAllConversation = asyncHandler(async(req,res)=>{
+    const conversation = await Conversation.find({
+        participants: { $in: [req.user._id] }
+      });
+    
+    return res.json({status:200, data:conversation})
+})
 
 export {
     sendMessage,
     getMessages,
     deleteMessage,
     deleteMessageForMe,
-    clearConversation
+    clearConversation,
+    getAllConversation
 }
