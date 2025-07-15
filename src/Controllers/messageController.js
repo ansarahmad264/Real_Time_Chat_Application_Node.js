@@ -1,6 +1,7 @@
 import Conversation from "../Models/conversation.model.js"
 import Message from "../Models/message.model.js"
 import { asyncHandler } from "../Utils/asyncHandler.js";
+import {ApiError} from "../Utils/ApiError.js"
 import { getRecieverSocketId, io } from "../socket/socket.js"
 import sendPushNotification from "../Utils/FcmNotification.js";
 import User from "../Models/user.model.js";
@@ -151,12 +152,12 @@ const deleteMessageForMe = asyncHandler(async (req, res) => {
     const message = await Message.findById(message_id);
 
     if (!message) {
-        return res.status(404).json({ msg: "Message not found" });
+        throw new ApiError(400, "Message not found" )
     }
 
     // Already deleted?
     if (message.deletedFor.includes(userId)) {
-        return res.status(200).json({ msg: "Message already deleted for this user" });
+       throw new ApiError(200, "Message already deleted for this user" )
     }
 
     message.deletedFor.push(userId);
@@ -165,10 +166,33 @@ const deleteMessageForMe = asyncHandler(async (req, res) => {
     return res.status(200).json({ msg: "Message deleted for you" });
 });
 
+const clearConversation = asyncHandler(async(req,res)=>{
+    const {conversation_id} = req.params
+    
+    if(!conversation_id){
+        throw new ApiError(400, "conversation Id is required")
+    }
+
+    const conversation = await Conversation.findById(conversation_id)
+    if(!conversation){
+        throw new ApiError(400, "Conversation not Found")
+    }
+
+    // Already deleted?
+    if (conversation.deletedFor.includes(req.user._id)) {
+        throw new ApiError(200,"Message already deleted for this user")
+    }
+
+    conversation.deletedFor.push(req.user._id)
+    await conversation.save()
+    return res.status(200).json({msg: "Conversation has been Cleared"})
+})
+
 
 export {
     sendMessage,
     getMessages,
     deleteMessage,
-    deleteMessageForMe
+    deleteMessageForMe,
+    clearConversation
 }
