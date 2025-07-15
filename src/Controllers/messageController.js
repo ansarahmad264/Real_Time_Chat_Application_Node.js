@@ -115,27 +115,31 @@ const getMessages = asyncHandler(async (req, res) => {
 
 const deleteMessage = asyncHandler(async (req, res) => {
     const { message_id } = req.params;
+    const currentUserId = req.user._id;
 
     if (!message_id) {
         return res.status(400).json({ msg: "Message ID is required." });
     }
 
-    const deletedMessage = await Message.findByIdAndUpdate(
-        message_id,
-        {
-            $set: {
-                message: "This message has been deleted."
-            },
-        },
-        { new: true } // return the updated document
-    );
+    // Find the message first
+    const message = await Message.findById(message_id);
 
-    if (!deletedMessage) {
+    if (!message) {
         return res.status(404).json({ msg: "Message not found." });
     }
 
-    return res.status(200).json({ msg: "Message deleted (soft delete)", message: deletedMessage });
+    //Only allow deletion if current user is the sender
+    if (message.senderId.toString() !== currentUserId.toString()) {
+        return res.status(403).json({ msg: "You can only delete messages you have sent." });
+    }
+
+    // Perform soft delete
+    message.message = "This message has been deleted.";
+    await message.save();
+
+    return res.status(200).json({ msg: "Message deleted (soft delete)", message });
 });
+
 
 export {
     sendMessage,
