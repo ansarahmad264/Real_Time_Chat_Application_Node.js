@@ -3,7 +3,7 @@ import Message from "../Models/message.model.js"
 import { asyncHandler } from "../Utils/asyncHandler.js";
 import { getRecieverSocketId, io } from "../socket/socket.js"
 import sendPushNotification from "../Utils/FcmNotification.js";
-import User from "../Models/userModel.js";
+import User from "../Models/user.model.js";
 import { chatWithMemory } from "../Chatbot/ChatbotLangGraph.js"
 
 const sendMessage = asyncHandler(async (req, res) => {

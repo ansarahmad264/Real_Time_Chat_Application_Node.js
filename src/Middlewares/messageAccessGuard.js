@@ -1,5 +1,5 @@
 import { asyncHandler } from "../Utils/asyncHandler.js";
-import User from "../Models/userModel.js"
+import User from "../Models/user.model.js"
 import { ApiError } from "../Utils/ApiError.js";
 
 export const dmProtect = asyncHandler(async (req, res, next) => {
