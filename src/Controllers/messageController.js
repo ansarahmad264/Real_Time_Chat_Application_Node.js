@@ -183,9 +183,15 @@ const clearConversation = asyncHandler(async(req,res)=>{
         throw new ApiError(200,"Message already deleted for this user")
     }
 
-    conversation.deletedFor.push(req.user._id)
-    await conversation.save()
-    return res.status(200).json({msg: "Conversation has been Cleared"})
+    if(conversation.participants.includes(process.env.AI_USER_ID)){
+        await Conversation.findByIdAndDelete({conversation_id})
+        return res.status(200).json({msg: "Conversation has been Cleared"})
+    }
+    else{
+        conversation.deletedFor.push(req.user._id)
+        await conversation.save()
+        return res.status(200).json({msg: "Conversation has been Cleared"})
+    }
 })
 
 
