@@ -184,7 +184,7 @@ const clearConversation = asyncHandler(async(req,res)=>{
     }
 
     if(conversation.participants.includes(process.env.AI_USER_ID)){
-        await Conversation.findByIdAndDelete({conversation_id})
+        await Conversation.findByIdAndDelete(conversation_id)
         return res.status(200).json({msg: "Conversation has been Cleared"})
     }
     else{
@@ -196,7 +196,8 @@ const clearConversation = asyncHandler(async(req,res)=>{
 
 const getAllConversation = asyncHandler(async(req,res)=>{
     const conversation = await Conversation.find({
-        participants: { $in: [req.user._id] }
+        participants: { $in: [req.user._id] },
+        deletedFor: { $nin: [req.user._id] }
       });
     
     return res.json({status:200, data:conversation})
