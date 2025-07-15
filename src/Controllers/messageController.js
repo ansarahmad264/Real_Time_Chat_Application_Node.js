@@ -94,7 +94,11 @@ const getMessages = asyncHandler(async (req, res) => {
             return res.status(404).json({ message: "No conversation found" });
         }
 
-        const messagesRaw = await Message.find({ conversationId: conversation._id })
+        const messagesRaw = await Message.find(
+            { 
+            conversationId: conversation._id,
+            deletedFor: { $ne: senderId } 
+            })
             .sort({ createdAt: 1 }) // oldest first
             .populate("senderId", "fullName username")
             .populate("recieverId", "fullName username");
