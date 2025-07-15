@@ -2,14 +2,13 @@ import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { asyncHandler } from "../Utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../Utils/Cloudinary.js";
-import User from "../Models/userModel.js";
+import User from "../Models/user.model.js";
 import jwt from "jsonwebtoken"
 import sendPushNotification from "../Utils/FcmNotification.js"
 import crypto from "crypto"
 import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../Utils/emails.js";
 import Message from "../Models/message.model.js"
 import mongoose from "mongoose";
-import { Console } from "console";
 
 
 const userSignup = asyncHandler(async (req, res) => {
