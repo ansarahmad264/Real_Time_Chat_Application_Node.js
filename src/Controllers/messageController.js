@@ -144,10 +144,31 @@ const deleteMessage = asyncHandler(async (req, res) => {
     return res.status(200).json({ msg: "Message deleted (soft delete)", message });
 });
 
+const deleteMessageForMe = asyncHandler(async (req, res) => {
+    const { message_id } = req.params;
+    const userId = req.user._id;
+
+    const message = await Message.findById(message_id);
+
+    if (!message) {
+        return res.status(404).json({ msg: "Message not found" });
+    }
+
+    // Already deleted?
+    if (message.deletedFor.includes(userId)) {
+        return res.status(200).json({ msg: "Message already deleted for this user" });
+    }
+
+    message.deletedFor.push(userId);
+    await message.save();
+
+    return res.status(200).json({ msg: "Message deleted for you" });
+});
 
 
 export {
     sendMessage,
     getMessages,
-    deleteMessage
+    deleteMessage,
+    deleteMessageForMe
 }
