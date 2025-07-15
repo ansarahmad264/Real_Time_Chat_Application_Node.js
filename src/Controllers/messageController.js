@@ -113,7 +113,32 @@ const getMessages = asyncHandler(async (req, res) => {
     }
 })
 
+const deleteMessage = asyncHandler(async (req, res) => {
+    const { message_id } = req.params;
+
+    if (!message_id) {
+        return res.status(400).json({ msg: "Message ID is required." });
+    }
+
+    const deletedMessage = await Message.findByIdAndUpdate(
+        message_id,
+        {
+            $set: {
+                message: "This message has been deleted."
+            },
+        },
+        { new: true } // return the updated document
+    );
+
+    if (!deletedMessage) {
+        return res.status(404).json({ msg: "Message not found." });
+    }
+
+    return res.status(200).json({ msg: "Message deleted (soft delete)", message: deletedMessage });
+});
+
 export {
     sendMessage,
-    getMessages
+    getMessages,
+    deleteMessage
 }
