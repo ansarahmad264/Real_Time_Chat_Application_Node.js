@@ -88,7 +88,8 @@ const getMessages = asyncHandler(async (req, res) => {
         const senderId = req.user._id
 
         const conversation = await Conversation.findOne({
-            participants: { $all: [senderId, userToChatId] }
+            participants: { $all: [senderId, userToChatId] },   
+            deletedFor: { $nin: [senderId] }
         })
 
         if (!conversation) {
@@ -184,12 +185,19 @@ const clearConversation = asyncHandler(async(req,res)=>{
     }
 
     if(conversation.participants.includes(process.env.AI_USER_ID)){
+        await Message.deleteMany({ conversationId: conversation_id })
         await Conversation.findByIdAndDelete(conversation_id)
         return res.status(200).json({msg: "Conversation has been Cleared"})
     }
     else{
         conversation.deletedFor.push(req.user._id)
         await conversation.save()
+
+        if(conversation.deletedFor.length >= 2){
+            await Message.deleteMany({ conversationId: conversation_id })
+            await Conversation.findByIdAndDelete(conversation_id)
+        }
+
         return res.status(200).json({msg: "Conversation has been Cleared"})
     }
 })
