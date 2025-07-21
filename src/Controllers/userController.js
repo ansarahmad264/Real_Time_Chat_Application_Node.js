@@ -370,7 +370,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
-//! Depracated...! Do Not Use
 const getAllUsersForSidebar = asyncHandler(async (req, res) => {
     try {
         const loggedInUserId = req.user._id
@@ -647,6 +646,12 @@ const unblockUser = asyncHandler(async (req, res) => {
     }
 });
 
+const getUserProfile = asyncHandler(async (req,res) => {
+    const user = await User.findById(req.user._id).select("fullName username profilePic isVerified email password")
+
+    return res.json(new ApiResponse(200, {user}, "user Logged in Successfullys" ))
+     
+})
 
 
 export {
@@ -667,4 +672,5 @@ export {
     findUserByEmailOrUsername,
     blockUser,
     unblockUser,
+    getUserProfile
 }
