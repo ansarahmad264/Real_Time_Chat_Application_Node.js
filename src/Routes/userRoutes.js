@@ -41,6 +41,6 @@ router.route('/get-users').get(verifyJWT, getChattedUsers)
 router.route('/find-user').post(verifyJWT, findUserByEmailOrUsername)
 router.route('/block-user/:userIdToBlock').post(verifyJWT,blockUser)
 router.route('/unblock-user/:userIdToUnblock').post(verifyJWT, unblockUser)
-router.route('/get-profile').get(verifyJWT ,getUserProfile)
+router.route('/user-profile').get(verifyJWT ,getUserProfile)
 
 export default router

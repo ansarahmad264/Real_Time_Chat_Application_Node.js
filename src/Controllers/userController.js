@@ -647,10 +647,14 @@ const unblockUser = asyncHandler(async (req, res) => {
 });
 
 const getUserProfile = asyncHandler(async (req,res) => {
-    const user = await User.findById(req.user._id).select("fullName username profilePic isVerified email password")
+    const user = await User.findById(req.user._id)
+    .select("fullName username profilePic isVerified email -_id")
 
-    return res.json(new ApiResponse(200, {user}, "user Logged in Successfullys" ))
-     
+    if (!user) {
+        return res.status(404).json(new ApiResponse(404, null, "User not found"));
+      }
+
+    return res.json(new ApiResponse(200, {user},))     
 })
 
 
