@@ -181,7 +181,7 @@ const clearConversation = asyncHandler(async(req,res)=>{
 
     // Already deleted?
     if (conversation.deletedFor.includes(req.user._id)) {
-        throw new ApiError(200,"Message already deleted for this user")
+        throw new ApiError(200,"Conversation already cleared for this user")
     }
 
     if(conversation.participants.includes(process.env.AI_USER_ID)){
