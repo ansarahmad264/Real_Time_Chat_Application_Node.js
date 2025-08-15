@@ -7,7 +7,7 @@ import connectDB from "./db/connection.js"
 import { app } from "./app.js"
 
 app.get("/", (req, res) => {
-    res.json({ success: true, data: {}, message: "Added CI/CD Pipeline and Server is running Successfully... .." })
+    res.json({ success: true, data: {}, message: "CI/CD Pipeline Setup and Server is running Successfully... .." })
 })
 
 connectDB()
