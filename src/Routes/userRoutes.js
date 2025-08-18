@@ -3,9 +3,18 @@ import { blockUser, changeCurrentPassword, findUserByEmailOrUsername, forgotPass
 import { verifyJWT } from "../Middlewares/Auth.js"
 import { upload } from "../Middlewares/multer.js"
 import passport from 'passport';
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Recreate __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router()
-
+// Serve login page on GET
+router.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../public/login.html"));
+});
 router.route("/signup").post(upload.single("profilePic"), userSignup)
 router.route("/login").post(userLogin)
 
