@@ -1,20 +1,12 @@
 import express from "express"
-import { blockUser, changeCurrentPassword, findUserByEmailOrUsername, forgotPassword, getAllUsersForSidebar, getChattedUsers, getUserProfile, googleCallback, refreshAccessToken, resetPassword, unblockUser, updateFcmToken, updateUserAccountDetails, updateUserProfilePicture, userLogin, userLogout, userSignup, verifyEmail } from "../Controllers/userController.js"
+import { blockUser, changeCurrentPassword, findUserByEmailOrUsername, forgotPassword, getAllUsersForSidebar, getChattedUsers, getUserProfile, googleCallback, refreshAccessToken, resetPassword, unblockUser, updateFcmToken, updateUserAccountDetails, updateUserProfilePicture, userHome, userLogin, userLogout, userSignup, verifyEmail } from "../Controllers/userController.js"
 import { verifyJWT } from "../Middlewares/Auth.js"
 import { upload } from "../Middlewares/multer.js"
 import passport from 'passport';
-import path from "path";
-import { fileURLToPath } from "url";
 
-// Recreate __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const router = express.Router()
-// Serve login page on GET
-router.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../public/login.html"));
-});
+
 router.route("/signup").post(upload.single("profilePic"), userSignup)
 router.route("/login").post(userLogin)
 
@@ -39,6 +31,7 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
 //Secured Routes
+router.route("/home").get(verifyJWT, userHome)
 router.route("/logout").post(verifyJWT, userLogout)
 router.route("/update-profile-picture").patch(verifyJWT, upload.single("profilePic"), updateUserProfilePicture)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)
