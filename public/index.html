@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Time Chat - Spring Awakening</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, 
+        #FFE5F1 0%,    /* Soft pink morning */
+        #FFF2E1 15%,   /* Warm peach */
+        #E8F8E8 30%,   /* Fresh mint green */
+        #E1F3FF 45%,   /* Sky blue */
+        #F0E8FF 60%,   /* Lavender */
+        #FFF5E6 75%,   /* Cream */
+        #E8FFE8 90%,   /* Light green */
+        #FFE5F1 100%); /* Back to pink */
+      background-size: 1000% 1000%;
+      animation: springBreeze 25s ease infinite;
+      position: relative;
+    }
+
+    @keyframes springBreeze {
+      0%, 100% { background-position: 0% 50%; }
+      25% { background-position: 100% 25%; }
+      50% { background-position: 50% 100%; }
+      75% { background-position: 25% 0%; }
+    }
+
+    .sunlight-rays {
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at center,
+        rgba(255, 223, 186, 0.3) 0%,
+        rgba(255, 239, 213, 0.2) 30%,
+        rgba(255, 248, 220, 0.1) 60%,
+        transparent 100%);
+      animation: sunRotate 60s linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @keyframes sunRotate {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    .floating-petals {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .petal {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50% 0 50% 0;
+      opacity: 0.7;
+      animation: petalFloat 15s linear infinite;
+    }
+
+    .petal:nth-child(odd) {
+      background: linear-gradient(45deg, #FFB6C1, #FFC0CB);
+      box-shadow: 0 0 10px rgba(255, 182, 193, 0.5);
+    }
+
+    .petal:nth-child(even) {
+      background: linear-gradient(45deg, #98FB98, #90EE90);
+      box-shadow: 0 0 10px rgba(152, 251, 152, 0.5);
+    }
+
+    .petal:nth-child(3n) {
+      background: linear-gradient(45deg, #DDA0DD, #E6E6FA);
+      box-shadow: 0 0 10px rgba(221, 160, 221, 0.5);
+    }
+
+    @keyframes petalFloat {
+      0% {
+        transform: translateY(-100vh) translateX(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.7;
+      }
+      90% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(100vh) translateX(200px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .spring-birds {
+      position: fixed;
+      top: 20%;
+      right: -200px;
+      font-size: 2rem;
+      animation: birdsFlying 20s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0.6;
+    }
+
+    @keyframes birdsFlying {
+      0% { transform: translateX(-200px) translateY(0px); }
+      25% { transform: translateX(50vw) translateY(-20px); }
+      50% { transform: translateX(100vw) translateY(10px); }
+      75% { transform: translateX(150vw) translateY(-30px); }
+      100% { transform: translateX(200vw) translateY(0px); }
+    }
+
+    .butterflies {
+      position: fixed;
+      top: 40%;
+      left: -100px;
+      font-size: 1.5rem;
+      animation: butterflyDance 25s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0.8;
+    }
+
+    @keyframes butterflyDance {
+      0%, 100% { transform: translate(-100px, 0) scale(1); }
+      25% { transform: translate(20vw, -50px) scale(1.2); }
+      50% { transform: translate(80vw, 30px) scale(0.8); }
+      75% { transform: translate(50vw, -20px) scale(1.1); }
+    }
+
+    .main-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .spring-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(25px) saturate(180%);
+      border: 3px solid transparent;
+      background-clip: padding-box;
+      border-radius: 40px;
+      padding: 5rem 4rem;
+      text-align: center;
+      position: relative;
+      max-width: 1000px;
+      transform: translateY(0) scale(1);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        0 0 60px rgba(255, 182, 193, 0.3);
+    }
+
+    .spring-card::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      border-radius: 40px;
+      background: linear-gradient(45deg, 
+        #FFB6C1, #98FB98, #87CEEB, #DDA0DD, #F0E68C, #FFE4E1, #E0FFFF, #FFB6C1);
+      background-size: 800% 800%;
+      animation: springBorderFlow 12s ease infinite;
+      z-index: -1;
+    }
+
+    @keyframes springBorderFlow {
+      0%, 100% { background-position: 0% 50%; }
+      25% { background-position: 100% 25%; }
+      50% { background-position: 50% 100%; }
+      75% { background-position: 25% 0%; }
+    }
+
+    .spring-card:hover {
+      transform: translateY(-15px) scale(1.02);
+      box-shadow: 
+        0 50px 100px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        0 0 100px rgba(255, 182, 193, 0.5);
+    }
+
+    .spring-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 5.5rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, 
+        #FF69B4, #32CD32, #87CEEB, #DA70D6, #FFD700, #FF6347);
+      background-size: 600% 600%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: springColors 8s ease-in-out infinite;
+      margin-bottom: 1.5rem;
+      line-height: 1.1;
+      text-shadow: 0 4px 20px rgba(255, 105, 180, 0.3);
+      position: relative;
+    }
+
+    .spring-title::before {
+      content: '✨';
+      position: absolute;
+      top: -20px;
+      left: 20%;
+      font-size: 2rem;
+      animation: sparkle 3s ease-in-out infinite;
+    }
+
+    .spring-title::after {
+      content: '🌸';
+      position: absolute;
+      top: -15px;
+      right: 20%;
+      font-size: 2rem;
+      animation: sparkle 3s ease-in-out infinite 1s;
+    }
+
+    @keyframes springColors {
+      0%, 100% { background-position: 0% 50%; filter: brightness(1.1) saturate(1.2); }
+      25% { background-position: 100% 25%; filter: brightness(1.2) saturate(1.3); }
+      50% { background-position: 50% 100%; filter: brightness(1.1) saturate(1.2); }
+      75% { background-position: 25% 0%; filter: brightness(1.3) saturate(1.1); }
+    }
+
+    @keyframes sparkle {
+      0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+      50% { transform: scale(1.3) rotate(180deg); opacity: 1; }
+    }
+
+    .spring-subtitle {
+      font-size: 2rem;
+      font-weight: 400;
+      background: linear-gradient(90deg, #FF69B4, #32CD32, #87CEEB);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 3rem;
+      animation: gentleFloat 4s ease-in-out infinite;
+      text-shadow: 0 2px 10px rgba(50, 205, 50, 0.2);
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .flower-garden {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin: 4rem 0;
+      flex-wrap: wrap;
+    }
+
+    .flower-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .flower-icon:nth-child(1) { 
+      background: linear-gradient(135deg, rgba(255, 182, 193, 0.8), rgba(255, 192, 203, 0.6));
+      box-shadow: 0 15px 35px rgba(255, 182, 193, 0.4);
+    }
+    .flower-icon:nth-child(2) { 
+      background: linear-gradient(135deg, rgba(152, 251, 152, 0.8), rgba(144, 238, 144, 0.6));
+      box-shadow: 0 15px 35px rgba(152, 251, 152, 0.4);
+    }
+    .flower-icon:nth-child(3) { 
+      background: linear-gradient(135deg, rgba(135, 206, 235, 0.8), rgba(173, 216, 230, 0.6));
+      box-shadow: 0 15px 35px rgba(135, 206, 235, 0.4);
+    }
+    .flower-icon:nth-child(4) { 
+      background: linear-gradient(135deg, rgba(221, 160, 221, 0.8), rgba(230, 230, 250, 0.6));
+      box-shadow: 0 15px 35px rgba(221, 160, 221, 0.4);
+    }
+
+    .flower-icon::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: flowerShine 4s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    @keyframes flowerShine {
+      0%, 100% { transform: rotate(0deg); opacity: 0.5; }
+      50% { transform: rotate(180deg); opacity: 0.8; }
+    }
+
+    .flower-icon:hover {
+      transform: scale(1.15) translateY(-10px) rotate(5deg);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    .flower-icon:hover::after {
+      content: '🌟';
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5rem;
+      animation: bounce 0.6s ease;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-10px); }
+    }
+
+    .spring-description {
+      font-size: 1.4rem;
+      color: #2E7D32;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+      font-weight: 300;
+      text-shadow: 0 1px 3px rgba(46, 125, 50, 0.1);
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .spring-developer-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 240, 245, 0.8));
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(255, 182, 193, 0.4);
+      color: #2E7D32;
+      padding: 1.5rem 4rem;
+      border-radius: 60px;
+      font-weight: 600;
+      margin: 2rem 0;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      box-shadow: 0 12px 35px rgba(255, 182, 193, 0.3);
+      font-size: 1.1rem;
+    }
+
+    .spring-developer-badge::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transform: rotate(45deg);
+      animation: badgeGlow 4s ease infinite;
+    }
+
+    @keyframes badgeGlow {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+      100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    }
+
+    .spring-developer-badge:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 20px 50px rgba(255, 182, 193, 0.5);
+    }
+
+    .spring-buttons {
+      display: flex;
+      gap: 2.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 4rem;
+    }
+
+    .btn-spring-bloom {
+      background: linear-gradient(135deg, #FF69B4, #FF1493, #FF69B4);
+      background-size: 200% 200%;
+      border: none;
+      padding: 1.6rem 4rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 15px 40px rgba(255, 105, 180, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-spring-bloom::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-spring-bloom:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-spring-bloom:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 25px 60px rgba(255, 105, 180, 0.6);
+      background-position: 100% 0%;
+    }
+
+    .btn-spring-breeze {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(20px);
+      border: 3px solid rgba(152, 251, 152, 0.6);
+      padding: 1.6rem 4rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #2E7D32;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-spring-breeze:hover {
+      background: linear-gradient(135deg, #98FB98, #90EE90);
+      border-color: #32CD32;
+      color: white;
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 25px 60px rgba(152, 251, 152, 0.5);
+    }
+
+    .morning-dew {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(135, 206, 235, 0.3));
+      border-radius: 50%;
+      animation: dewDrop 8s ease-in-out infinite;
+      pointer-events: none;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    @keyframes dewDrop {
+      0%, 100% { transform: scale(1) translateY(0); opacity: 0.8; }
+      50% { transform: scale(1.2) translateY(-5px); opacity: 1; }
+    }
+
+    .rainbow-arch {
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 150px;
+      border: 5px solid transparent;
+      border-radius: 300px 300px 0 0;
+      background: linear-gradient(90deg, 
+        rgba(255, 0, 0, 0.3), 
+        rgba(255, 165, 0, 0.3), 
+        rgba(255, 255, 0, 0.3), 
+        rgba(0, 255, 0, 0.3), 
+        rgba(0, 0, 255, 0.3), 
+        rgba(75, 0, 130, 0.3), 
+        rgba(238, 130, 238, 0.3));
+      background-clip: content-box;
+      animation: rainbowGlow 10s ease-in-out infinite;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    @keyframes rainbowGlow {
+      0%, 100% { filter: brightness(1) saturate(1); }
+      50% { filter: brightness(1.3) saturate(1.5); }
+    }
+
+    @media (max-width: 768px) {
+      .spring-title {
+        font-size: 4rem;
+      }
+      
+      .spring-card {
+        padding: 3rem 2rem;
+        margin: 1rem;
+      }
+      
+      .spring-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      
+      .btn-spring-bloom,
+      .btn-spring-breeze {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .flower-garden {
+        gap: 2rem;
+      }
+
+      .flower-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+      }
+    }
+
+    .spring-magic-sparkles {
+      position: absolute;
+      font-size: 1.2rem;
+      animation: magicSparkle 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes magicSparkle {
+      0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+      20%, 80% { opacity: 1; transform: scale(1) rotate(180deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="sunlight-rays"></div>
+  
+  <div class="floating-petals" id="petals"></div>
+  
+  <div class="spring-birds">🕊️ 🕊️ 🕊️</div>
+  <div class="butterflies">🦋 🦋</div>
+
+  <div class="main-container">
+    <div class="spring-card" id="springCard">
+      <div class="rainbow-arch"></div>
+      
+      <h1 class="spring-title" data-text="🌸 Real Time Chat Garden 🌻">
+        🌸 Real Time Chat Garden 🌻
+      </h1>
+      
+      <div class="spring-subtitle">
+        🌺 Where conversations bloom like flowers 🌺
+      </div>
+      
+      <div class="flower-garden">
+        <div class="flower-icon" title="Instant Messaging">💬</div>
+        <div class="flower-icon" title="Safe & Secure">🔒</div>
+        <div class="flower-icon" title="Beautiful Design">🎨</div>
+        <div class="flower-icon" title="Always Connected">📱</div>
+      </div>
+      
+      <p class="spring-description">
+        Welcome to a place where every conversation is like a gentle spring morning breeze. 
+        Connect with your loved ones in the most beautiful and joyful way possible. 
+        Watch your friendships bloom and grow in our enchanted chat garden! 🌱✨
+      </p>
+      
+      <div class="spring-developer-badge">
+        <span>🌟 Lovingly crafted by </span>
+        <strong>ANSAR AHMAD</strong> 
+        <span> (AKA </span>
+        <strong>FRANK</strong>
+        <span>) with spring magic 🌟</span>
+      </div>
+      
+      <div class="spring-buttons">
+        <button class="btn btn-spring-bloom" onclick="enterSpringGarden()">
+          🌸 Start Blooming
+        </button>
+        <button class="btn btn-spring-breeze" onclick="exploreGarden()">
+          🦋 Explore Features
+        </button>
+      </div>
+
+      <!-- Magic sparkles -->
+      <div class="spring-magic-sparkles" style="top: 20%; left: 15%; animation-delay: 0s;">✨</div>
+      <div class="spring-magic-sparkles" style="top: 30%; right: 20%; animation-delay: 1s;">🌟</div>
+      <div class="spring-magic-sparkles" style="bottom: 25%; left: 25%; animation-delay: 2s;">💫</div>
+      <div class="spring-magic-sparkles" style="bottom: 35%; right: 15%; animation-delay: 3s;">⭐</div>
+      
+      <!-- Morning dew drops -->
+      <div class="morning-dew" style="top: 15%; left: 20%; animation-delay: 1s;"></div>
+      <div class="morning-dew" style="top: 25%; right: 25%; animation-delay: 3s;"></div>
+      <div class="morning-dew" style="bottom: 20%; left: 30%; animation-delay: 5s;"></div>
+    </div>
+  </div>
+
+  <script>
+    // Create floating petals
+    function createFloatingPetals() {
+      const petalsContainer = document.getElementById('petals');
+      
+      for (let i = 0; i < 50; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.animationDelay = Math.random() * 15 + 's';
+        petal.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        
+        petalsContainer.appendChild(petal);
+      }
+    }
+
+    // 3D hover effect
+    const springCard = document.getElementById('springCard');
+    
+    springCard.addEventListener('mousemove', (e) => {
+      const rect = springCard.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateX = (y - centerY) / 30;
+      const rotateY = (centerX - x) / 30;
+      
+      springCard.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-15px) scale(1.02)`;
+    });
+
+    springCard.addEventListener('mouseleave', () => {
+      springCard.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0) scale(1)';
+    });
+
+    // Button functions with spring animations
+    function enterSpringGarden() {
+      // Create blooming effect
+      const bloom = document.createElement('div');
+      bloom.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(circle, #FF69B4, #98FB98, #87CEEB);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        animation: bloomEffect 2s ease-out;
+        z-index: 10000;
+        pointer-events: none;
+      `;
+      
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes bloomEffect {
+          0% { 
+            transform: translate(-50%, -50%) scale(0) rotate(0deg); 
+            opacity: 1; 
+          }
+          50% { 
+            transform: translate(-50%, -50%) scale(5) rotate(180deg); 
+            opacity: 0.8; 
+          }
+          100% { 
+            transform: translate(-50%, -50%) scale(20) rotate(360deg); 
+            opacity: 0; 
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      document.body.appendChild(bloom);
+      
+      setTimeout(() => {
+        bloom.remove();
+        style.remove();
+        alert('🌸 Welcome to the Spring Chat Garden! Let your conversations bloom! 🌻');
+      }, 2000);
+    }
+    
+    function exploreGarden() {
+      // Create butterfly effect
+      const butterflies = ['🦋', '🌸', '🌺', '🌻', '🌷'];
+      
+      for (let i = 0; i < 8; i++) {
+        const butterfly = document.createElement('div');
+        butterfly.textContent = butterflies[Math.floor(Math.random() * butterflies.length)];
+        butterfly.style.cssText = `
+          position: fixed;
+          font-size: 2rem;
+          top: 50%;
+          left: 50%;
+          animation: butterflyExplore 3s ease-out ${i * 0.2}s;
+          z-index: 10000;
+          pointer-events: none;
+        `;
+        
+        document.body.appendChild(butterfly);
+        
+        setTimeout(() => butterfly.remove(), 3000 + i * 200);
+        }
+    }

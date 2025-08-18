@@ -657,6 +657,16 @@ const getUserProfile = asyncHandler(async (req,res) => {
     return res.json(new ApiResponse(200, {user},))     
 })
 
+const userHome = asyncHandler (async (req, res) => {
+    const user =  await User.findById(req.user._id)
+                        .select("fullName username profilePic email isverified")
+    
+    const filteredUsers = await User.find({ _id: { $ne: user._id } }).select("fullName username profilePic")
+    console.log(filteredUsers)
+
+    return res.json(new ApiResponse(200, {user, filteredUsers}))
+})
+
 
 export {
     userSignup,
@@ -676,5 +686,6 @@ export {
     findUserByEmailOrUsername,
     blockUser,
     unblockUser,
-    getUserProfile
+    getUserProfile,
+    userHome
 }
